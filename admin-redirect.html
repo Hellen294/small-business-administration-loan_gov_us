@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Redirect Setup</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+</head>
+<body>
+  <h2>Admin: Set Redirect Page for Users</h2>
+
+  <label for="userSelect">Select User:</label>
+  <select id="userSelect">
+    <option>Loading users...</option>
+  </select><br><br>
+
+  <label for="redirectUrl">Redirect Page (e.g., user1page.html):</label><br>
+  <input type="text" id="redirectUrl" placeholder="Enter page URL"><br><br>
+
+  <button onclick="setRedirect()">Save Redirect</button>
+
+  <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBCjVwHfCK0kiXwes1fbKok-EU-aTnuJ2s",
+  authDomain: "words-a53db.firebaseapp.com",
+  databaseURL: "https://words-a53db-default-rtdb.firebaseio.com",
+  projectId: "words-a53db",
+  storageBucket: "words-a53db.firebasestorage.app",
+  messagingSenderId: "432659334745",
+  appId: "1:432659334745:web:504e12c193a04b0a6c9348"
+};
+
+    firebase.initializeApp(firebaseConfig);
+
+    // Fetch all users from database for dropdown
+    loadUsers();
+
+    function loadUsers() {
+      const userSelect = document.getElementById("userSelect");
+      userSelect.innerHTML = '<option>Loading...</option>';
+
+      // This assumes user emails are stored under /users with UID as key
+      firebase.database().ref("users").once("value", (snapshot) => {
+        const users = snapshot.val();
+        userSelect.innerHTML = '';
+        for (let uid in users) {
+          const email = users[uid].email || uid;
+          const option = document.createElement("option");
+          option.value = uid;
+          option.textContent = email;
+          userSelect.appendChild(option);
+        }
+      });
+    }
+
+    function setRedirect() {
+      const selectedUID = document.getElementById("userSelect").value;
+      const redirectPage = document.getElementById("redirectUrl").value;
+
+      if (!redirectPage) {
+        alert("Please enter a redirect page");
+        return;
+      }
+
+      firebase.database().ref("userRedirects/" + selectedUID).set(redirectPage)
+        .then(() => {
+          alert("Redirect page set successfully!");
+        })
+        .catch((error) => {
+          alert("Error setting redirect: " + error.message);
+        });
+    }
+  </script>
+</body>
+</html>
